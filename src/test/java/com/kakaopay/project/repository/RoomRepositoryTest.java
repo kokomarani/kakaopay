@@ -14,5 +14,9 @@ class RoomRepositoryTest {
     void saveRoom() {
         RoomEntity roomEntity = new RoomEntity();
         roomRepository.save(roomEntity);
+
+        for(RoomEntity roomEntity1 :  roomRepository.findAll()){
+            System.out.println(roomEntity1.getId());
+        }
     }
 }

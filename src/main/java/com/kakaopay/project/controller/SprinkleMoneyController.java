@@ -15,8 +15,8 @@ public class SprinkleMoneyController {
     @Autowired
     private SprinkleMoneyService sprinkleMoneyService;
 
-    @ApiOperation(value = "뿌리", httpMethod = "POST", notes = "뿌리 API")
-    @PostMapping("/api/sprinkle_money")
+    @ApiOperation(value = "뿌리", httpMethod = "PUT", notes = "뿌리 API")
+    @PutMapping("/api/sprinkle_money")
     public ResponseEntity<SprinkleMoneyResponse> sprinkleMoney(@RequestHeader("X-USER-ID") Long userId,
                                                      @RequestHeader("X-ROOM-ID") Long roomId,
                                                      @RequestBody EventVO eventVO) throws Exception{

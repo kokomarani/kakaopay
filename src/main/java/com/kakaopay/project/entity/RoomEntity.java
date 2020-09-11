@@ -1,15 +1,25 @@
 package com.kakaopay.project.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Data
 @Table(name="ROOM")
 public class RoomEntity {
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="ROOM_ID")
     @Id
-    private long id; // pk
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "ID", updatable = false, nullable = false)
+    @ColumnDefault("random_uuid()")
+    @Type(type = "uuid-char")
+    private UUID id;
 }
