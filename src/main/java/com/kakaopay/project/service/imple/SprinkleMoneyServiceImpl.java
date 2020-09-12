@@ -6,11 +6,13 @@ import com.kakaopay.project.entity.PickUpMoneyEntity;
 import com.kakaopay.project.entity.RoomEntity;
 import com.kakaopay.project.entity.SprinkleMoneyEntity;
 import com.kakaopay.project.entity.UserEntity;
+import com.kakaopay.project.exception.ProjectServiceException;
 import com.kakaopay.project.repository.PickUpMoneyRepository;
 import com.kakaopay.project.repository.RoomRepository;
 import com.kakaopay.project.repository.SprinkleMoneyRepository;
 import com.kakaopay.project.repository.UserRepository;
 import com.kakaopay.project.service.SprinkleMoneyService;
+import com.kakaopay.project.vo.ErrorCode;
 import com.kakaopay.project.vo.EventVO;
 import com.kakaopay.project.vo.response.PickUpMoneyResponse;
 import com.kakaopay.project.vo.response.SprinkleMoneyResponse;
@@ -24,6 +26,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
@@ -41,25 +44,18 @@ public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
     static int TOKEN_LENGTH = 3;
 
     @Override
-    public SprinkleMoneyResponse sprinkleInfo(String token, long roomId, long userId){
+    public SprinkleMoneyResponse sprinkleInfo(String token, String roomId, long userId){
         SprinkleMoneyResponse response = new SprinkleMoneyResponse();
         SprinkleMoneyEntity sprinkleMoneyEntity = sprinkleMoneyRepository.findByTokenAndRoomId(token, roomId);
 
         if (sprinkleMoneyEntity == null){
-            response.setCode("E0000");
-            response.setMessage("데이터가 존재하지 않습니다");
-            return response;
+            throw new ProjectServiceException("E0000", ErrorCode.Service.NO_DATA);
         }
         if (userId != sprinkleMoneyEntity.getUserId()){
-            response.setCode("E0001");
-            response.setMessage("뿌린 사람 자신만 조회할 수 있습니다.");
-            return response;
+            throw new ProjectServiceException("E0001", ErrorCode.Service.ONLY_SHOW_OTHER);
         }
-
         if (Period.between(sprinkleMoneyEntity.getCreatedAt().toLocalDate(), LocalDateTime.now().toLocalDate()).getDays() > 7){
-            response.setCode("E0002");
-            response.setMessage("조회 기간이 경과되었습니다.");
-            return response;
+            throw new ProjectServiceException("E0002", ErrorCode.Service.EXPIRE_SHOW);
         }
 
         response.setCode("A0000");
@@ -70,38 +66,26 @@ public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
 
     @Override
     @Transactional
-    public SprinkleMoneyResponse sprinkleMoney(long roomId, long userId, EventVO eventVO) {
+    public SprinkleMoneyResponse sprinkleMoney(String roomId, long userId, EventVO eventVO) {
+
         SprinkleMoneyResponse response = new SprinkleMoneyResponse();
         String newToken = validationToken(roomId);
         if (newToken.isEmpty()){
-            response.setCode("E0003");
-            response.setMessage("토큰이 중복 됩니다. 다시 시도해 주세요.");
-            return response;
+            throw new ProjectServiceException("E0003", ErrorCode.Service.EXSIST_TOKEN);
         }
 
         Optional<UserEntity> userEntity = userRepository.findById(userId);
         if (!userEntity.isPresent()) {
-            response.setCode("E0004");
-            response.setMessage("존재하지 않는 유저 입니다.");
-            return response;
+            throw new ProjectServiceException("E0004", ErrorCode.Service.NOT_EXSIST_USER);
         }
 
+        Optional<RoomEntity> room = roomRepository.findById(UUID.fromString(roomId));
+        if (!room.isPresent()){
+            throw new ProjectServiceException("E0005", ErrorCode.Service.NOT_EXIIST_ROOM);
+        }
+
+        SprinkleMoneyEntity sprinkleMoney = setSprinkleMoneyEntity(userId, eventVO, newToken, room.get());
         long remain = userEntity.get().getPayMoney() - eventVO.getEventAmount();
-        if (remain < 0){
-            response.setCode("E0005");
-            response.setMessage("뿌릴 돈이 모자랍니다.");
-            return response;
-        }
-
-        RoomEntity room = roomRepository.findById(roomId);
-        if (room == null){
-            response.setCode("E0006");
-            response.setMessage("카카오톡 방이 존재하지 않습니다. 방을 생성해주세요.");
-            return response;
-        }
-
-        SprinkleMoneyEntity sprinkleMoney = setSprinkleMoneyEntity(userId, eventVO, newToken, room);
-
         userEntity.get().setPayMoney(remain);
         userRepository.save(userEntity.get());
 
@@ -113,33 +97,32 @@ public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
 
     @Override
     @Transactional
-    public PickUpMoneyResponse pickUpSprinkleMoney(String token, long roomId, long userId){
+    public PickUpMoneyResponse pickUpSprinkleMoney(String token, String roomId, long userId){
         PickUpMoneyResponse response = new PickUpMoneyResponse();
 
-        SprinkleMoneyEntity sprinkleMoneyEntity = sprinkleMoneyRepository.findByTokenAndRoomId(token,roomId);
+        SprinkleMoneyEntity sprinkleMoneyEntity = sprinkleMoneyRepository.findByTokenAndRoomId( token, roomId);
         if (sprinkleMoneyEntity == null){
-            response.setCode("E0000");
-            response.setMessage("데이터가 존재하지 않습니다");
-            return response;
+            throw new ProjectServiceException("E0000", ErrorCode.Service.NO_DATA);
         }
-
         Optional<UserEntity> userEntity = userRepository.findById(userId);
         if (!userEntity.isPresent()) {
-            response.setCode("E0004");
-            response.setMessage("존재하지 않는 유저 입니다.");
-            return response;
+            throw new ProjectServiceException("E0004", ErrorCode.Service.NOT_EXSIST_USER);
         }
 
-        if (Duration.between(sprinkleMoneyEntity.getCreatedAt(), LocalDateTime.now()).getSeconds() > 600) {
-            response.setCode("E0007");
-            response.setMessage("받기 유효시간이 경과하였습니다.(10분)");
-            return response;
+        if (userEntity.get().getRoomEntity() == null){
+            throw new ProjectServiceException("E0018", ErrorCode.Service.NOT_EXSIST_ROOM_USER);
+        }
+
+        if (!userEntity.get().getRoomEntity().getId().equals(UUID.fromString(roomId))) {
+            throw new ProjectServiceException("E0008", ErrorCode.Service.NOT_EXSIST_ROOM_USER);
         }
 
         if (sprinkleMoneyEntity.getUserId() == userId){
-            response.setCode("E0008");
-            response.setMessage("자신이 뿌리기 한 건은 자신이 받을 수 없습니다.");
-            return response;
+            throw new ProjectServiceException("E0007", ErrorCode.Service.ONLY_GET_OTHER);
+        }
+
+        if (Duration.between(sprinkleMoneyEntity.getCreatedAt(), LocalDateTime.now()).getSeconds() > 600) {
+            throw new ProjectServiceException("E0006", ErrorCode.Service.EXPIRE_RECEIVE);
         }
 
         for(PickUpMoneyEntity pickUpMoneyEntity : sprinkleMoneyEntity.getPickUpMoneyEntities()){
@@ -184,7 +167,7 @@ public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
         return sprinkleMoney;
     }
 
-    private String validationToken(long roomId){
+    private String validationToken(String roomId){
         //5번 정도 재시도, 이후 중복이면 에러코드 리턴
         int findLimit = 5;
         int i = 0;

@@ -16,8 +16,8 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
 
         return new ApiInfoBuilder()
-                .title("Demo")
-                .description("API EXAMPLE")
+                .title("kakaopay event")
+                .description("API")
                 .build();
     }
 
@@ -27,8 +27,6 @@ public class SwaggerConfig {
                 .groupName("example")
                 .apiInfo(this.apiInfo())
                 .select()
-                //.apis(RequestHandlerSelectors
-                //        .basePackage("com.example.demo.controller"))
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.ant("/api/**"))
                 .build();

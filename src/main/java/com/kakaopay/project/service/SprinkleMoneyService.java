@@ -5,8 +5,8 @@ import com.kakaopay.project.vo.response.PickUpMoneyResponse;
 import com.kakaopay.project.vo.response.SprinkleMoneyResponse;
 
 public interface SprinkleMoneyService {
-    SprinkleMoneyResponse sprinkleInfo(String token, long roomId, long userId) throws Exception;
-    SprinkleMoneyResponse sprinkleMoney(long roomId, long userId, EventVO eventVO) throws Exception;
-    PickUpMoneyResponse pickUpSprinkleMoney(String token, long roomId, long userId) throws Exception;
+    SprinkleMoneyResponse sprinkleInfo(String token, String roomId, long userId) throws Exception;
+    SprinkleMoneyResponse sprinkleMoney(String roomId, long userId, EventVO eventVO) throws Exception;
+    PickUpMoneyResponse pickUpSprinkleMoney(String token, String roomId, long userId) throws Exception;
 
 }

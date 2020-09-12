@@ -15,10 +15,10 @@ public class SprinkleMoneyController {
     @Autowired
     private SprinkleMoneyService sprinkleMoneyService;
 
-    @ApiOperation(value = "뿌리", httpMethod = "PUT", notes = "뿌리 API")
+    @ApiOperation(value = "뿌리기", httpMethod = "PUT", notes = "뿌리기 API")
     @PutMapping("/api/sprinkle_money")
     public ResponseEntity<SprinkleMoneyResponse> sprinkleMoney(@RequestHeader("X-USER-ID") Long userId,
-                                                     @RequestHeader("X-ROOM-ID") Long roomId,
+                                                     @RequestHeader("X-ROOM-ID") String roomId,
                                                      @RequestBody EventVO eventVO) throws Exception{
         SprinkleMoneyResponse response = sprinkleMoneyService.sprinkleMoney(roomId, userId, eventVO);
 
@@ -32,7 +32,7 @@ public class SprinkleMoneyController {
     @ApiOperation(value = "받기", httpMethod = "POST", notes = "받기 API")
     @PostMapping("/api/sprinkle_money/{token}")
     public ResponseEntity<PickUpMoneyResponse> pickUpSprinkleMoney(@RequestHeader("X-USER-ID") Long userId,
-                                                                     @RequestHeader("X-ROOM-ID") Long roomId,
+                                                                     @RequestHeader("X-ROOM-ID") String roomId,
                                                                      @PathVariable(name = "token") String token) throws Exception{
         PickUpMoneyResponse response = sprinkleMoneyService.pickUpSprinkleMoney(token, roomId, userId);
 
@@ -43,9 +43,9 @@ public class SprinkleMoneyController {
         }
     }
 
-    @ApiOperation(value = "조회", httpMethod = "GET", notes = "조회 API")
+    @ApiOperation(value = "데이터 조회", httpMethod = "GET", notes = "데이터 조회 API")
     @GetMapping("/api/sprinkle_money/{token}")
-    public ResponseEntity<SprinkleMoneyResponse> sprinkleMoneyInfo(@RequestHeader(name = "x-room-id") long roomId,
+    public ResponseEntity<SprinkleMoneyResponse> sprinkleMoneyInfo(@RequestHeader(name = "x-room-id") String roomId,
                                                               @RequestHeader(name = "x-user-id") long userId,
                                                               @PathVariable(name = "token") String token) throws Exception{
 
@@ -56,8 +56,6 @@ public class SprinkleMoneyController {
         }else{
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
 }

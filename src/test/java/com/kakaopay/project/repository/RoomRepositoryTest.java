@@ -11,12 +11,11 @@ class RoomRepositoryTest {
     private RoomRepository roomRepository;
 
     @Test
-    void saveRoom() {
+    void saveAndFindRoom() {
         RoomEntity roomEntity = new RoomEntity();
         roomRepository.save(roomEntity);
 
-        for(RoomEntity roomEntity1 :  roomRepository.findAll()){
-            System.out.println(roomEntity1.getId());
-        }
+        Iterable<RoomEntity> roomEntities = roomRepository.findAll();
+        roomEntities.forEach(roomEntity1 -> System.out.println(roomEntity1.toString()));
     }
 }

@@ -27,12 +27,22 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     testCompile "org.testcontainers:testcontainers:1.12.4" 
     testCompile "org.testcontainers:junit-jupiter:1.12.4"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.4.2"
+    testCompile "org.junit.jupiter:junit-jupiter-params:5.4.2"
     
+    testCompile "org.testcontainers:testcontainers:1.14.3"
+    testCompile "org.testcontainers:junit-jupiter:1.14.3"
+   
+
+
 }
 
 

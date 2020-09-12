@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @EnableJpaRepositories(basePackages = {"eventdb"})
 @EntityScan(basePackages = {"eventdb"})
 @Configuration
 public interface UserRepository extends CrudRepository<UserEntity, Long> {
-//    @Query(value = "select u from UserEntity u where u.userRoomEntity=?1 ORDER BY RAND() LIMIT 3", nativeQuery = true)
-//    List<UserEntity> findByRoomId(long roomId, int limitCount);
-
+    List<UserEntity> findTop20By();
 }

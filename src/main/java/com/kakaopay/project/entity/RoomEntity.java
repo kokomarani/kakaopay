@@ -18,7 +18,7 @@ public class RoomEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "ID", updatable = false, nullable = false)
+    @Column(name = "ROOM_ID", updatable = false, nullable = false)
     @ColumnDefault("random_uuid()")
     @Type(type = "uuid-char")
     private UUID id;

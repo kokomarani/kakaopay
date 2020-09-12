@@ -17,8 +17,9 @@ import org.springframework.stereotype.Repository;
 public interface SprinkleMoneyRepository extends CrudRepository<SprinkleMoneyEntity, Long> {
 
     @Query(value = "select * from SPRINKLE_MONEY s where s.TOKEN= :token and s.ROOM_ID= :roomId", nativeQuery = true)
-    SprinkleMoneyEntity findByTokenAndRoomId(@Param("token") String token,@Param("roomId") long roomId);
+    SprinkleMoneyEntity findByTokenAndRoomId(@Param("token") String token,@Param("roomId") String roomId);
 
+    SprinkleMoneyEntity findFirstBy();
 
 
 }

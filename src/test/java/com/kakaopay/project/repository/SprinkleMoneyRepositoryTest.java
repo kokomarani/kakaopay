@@ -11,7 +11,7 @@ class SprinkleMoneyRepositoryTest {
     private SprinkleMoneyRepository sprinkleMoneyRepository;
     @Test
     void findByTokenAndRoomId() {
-        SprinkleMoneyEntity sprinkleMoneyEntity = sprinkleMoneyRepository.findByTokenAndRoomId("xrl", 1);
+        SprinkleMoneyEntity sprinkleMoneyEntity = sprinkleMoneyRepository.findByTokenAndRoomId("xrl", "aaa");
         if (sprinkleMoneyEntity == null){
             System.out.println("없어용");
         }else{
