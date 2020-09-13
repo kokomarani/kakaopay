@@ -39,7 +39,7 @@ class SprinkleMoneyServiceImplTest {
      * 방 생성
      * **/
     @Test
-    void testA() {
+    void test_beforeRoom() {
         //1번방
         RoomEntity roomEntity = new RoomEntity();
         roomRepository.save(roomEntity);
@@ -54,7 +54,7 @@ class SprinkleMoneyServiceImplTest {
      * 유저 생성
      * **/
     @Test
-    void testB() {
+    void test_beforeUser() {
         //첫번째방 유저들(5명)
         for(int i = 0; i < 5; i ++){
             UserEntity userEntity = new UserEntity();
@@ -87,7 +87,7 @@ class SprinkleMoneyServiceImplTest {
      * @throws Exception
      */
     @Test
-    void testC() throws Exception{
+    void test_sprinkleAnd() throws Exception{
         //1번방의 1번 유저가 뿌리기
         long userId = 1;
         EventVO eventVO = new EventVO();
@@ -104,14 +104,14 @@ class SprinkleMoneyServiceImplTest {
      * @throws Exception
      */
     @Test
-    void testD() throws Exception{
+    void test_sprinkleAndPickUpSelf() throws Exception{
         long sprinkleAndPickUpUserId = 1;
         EventVO eventVO = new EventVO();
         eventVO.setEventAmount(1000);
         eventVO.setEventUserCount(20);
 
         SprinkleMoneyResponse sprinkleMoney = sprinkleMoneyService.sprinkleMoney(roomRepository.findTopByOrderByIdAsc().getId().toString(), sprinkleAndPickUpUserId, eventVO);
-        System.out.println("4. 받기 - 뿌리기 한 사람이 받기(Exception 케이스");
+        System.out.println("4. 받기 - 뿌리기 한 사람이 받기(Exception 케이스)");
         System.out.println("4-1. 뿌리기 데이터 결과");
         System.out.println(sprinkleMoney.toString());
 
@@ -124,48 +124,21 @@ class SprinkleMoneyServiceImplTest {
             assertThat(p.getResultCode(), equalTo("E0007"));
         }
     }
-    /****
-     * 받기 - 1번방 유저가 1번방 유저의 뿌리기를 받으려고 할 때(정상 케이스)
-     * @throws Exception
-     */
-    @Test
-    void testE() throws Exception{
-        long sprinkleUserId = 1;
-        EventVO eventVO = new EventVO();
-        eventVO.setEventAmount(1000);
-        eventVO.setEventUserCount(20);
-
-        SprinkleMoneyResponse sprinkleMoney = sprinkleMoneyService.sprinkleMoney(roomRepository.findTopByOrderByIdAsc().getId().toString(), sprinkleUserId, eventVO);
-        System.out.println("5. 받기 - 1번방 유저가 1번방 유저의 뿌리기를 받으려고 할 때스(정상 케이스)");
-        System.out.println("5-1. 뿌리기 데이터 결과");
-        System.out.println(sprinkleMoney.toString());
-
-        long pickUpUserId = 3;
-        try{
-            PickUpMoneyResponse pickUpSprinkleMoney = sprinkleMoneyService.pickUpSprinkleMoney(sprinkleMoney.getSprinkleMoney().getToken(), sprinkleMoney.getSprinkleMoney().getRoomEntity().getId().toString(), pickUpUserId);
-            System.out.println("5-2. 받기 테스트 결과");
-            System.out.println(pickUpSprinkleMoney.getMessage() +" - " +pickUpSprinkleMoney.toString());
-            System.out.println(pickUpSprinkleMoney.toString());
-            assertThat(pickUpSprinkleMoney.getCode(), equalTo("A0000"));
-        }catch (ProjectException p){
-            assertThat(p.getResultCode(), equalTo("E0007"));
-        }
-    }
 
     /****
      * 받기 - 2번방 유저가 1번방 뿌리기를 받으려고 할 때(Exception 케이스)
      * @throws Exception
      */
     @Test
-    void testF() throws Exception{
+    void test_sprinkleAndPickUpOtherRoom() throws Exception{
         long sprinkleUserId = 1;
         EventVO eventVO = new EventVO();
         eventVO.setEventAmount(1000);
         eventVO.setEventUserCount(20);
 
         SprinkleMoneyResponse sprinkleMoney = sprinkleMoneyService.sprinkleMoney(roomRepository.findTopByOrderByIdAsc().getId().toString(), sprinkleUserId, eventVO);
-        System.out.println("6. 받기 - 2번방 유저가 1번방 뿌리기를 받으려고 할 때(Exception 케이스)");
-        System.out.println("6-1. 뿌리기 데이터 결과");
+        System.out.println("5. 받기 - 2번방 유저가 1번방 뿌리기를 받으려고 할 때(Exception 케이스)");
+        System.out.println("5-1. 뿌리기 데이터 결과");
         System.out.println(sprinkleMoney.toString());
 
         long pickUpUserId = 6;
@@ -173,25 +146,26 @@ class SprinkleMoneyServiceImplTest {
             PickUpMoneyResponse pickUpSprinkleMoney = sprinkleMoneyService.pickUpSprinkleMoney(sprinkleMoney.getSprinkleMoney().getToken(), sprinkleMoney.getSprinkleMoney().getRoomEntity().getId().toString(), pickUpUserId);
             assertThat(pickUpSprinkleMoney.getCode(), equalTo("A0000"));
         }catch (ProjectException p){
-            System.out.println("6-2. 받기 테스트 결과");
+            System.out.println("5-2. 받기 테스트 결과");
             System.out.println(p.getDefaultMsg() +" - "+ p.toString());
             assertThat(p.getResultCode(), equalTo("E0008"));
         }
     }
+
     /****
      * 받기 - 참가한 방이 없는 유저가 1번방 뿌리기를 받으려고 할때(Exception 케이스)
      * @throws Exception
      */
     @Test
-    void testG() throws Exception{
+    void test_sprinkleAndPickUpNotParticipate() throws Exception{
         long sprinkleUserId = 1;
         EventVO eventVO = new EventVO();
         eventVO.setEventAmount(1000);
         eventVO.setEventUserCount(20);
 
         SprinkleMoneyResponse sprinkleMoney = sprinkleMoneyService.sprinkleMoney(roomRepository.findTopByOrderByIdAsc().getId().toString(), sprinkleUserId, eventVO);
-        System.out.println("7. 받기 - 참가한 방이 없는 유저가 1번방 뿌리기를 받으려고 할때(Exception 케이스)");
-        System.out.println("7-1. 뿌리기 데이터 결과");
+        System.out.println("6. 받기 - 참가한 방이 없는 유저가 1번방 뿌리기를 받으려고 할때(Exception 케이스)");
+        System.out.println("6-1. 뿌리기 데이터 결과");
         System.out.println(sprinkleMoney.toString());
 
         long pickUpUserId = 11;
@@ -199,11 +173,38 @@ class SprinkleMoneyServiceImplTest {
             PickUpMoneyResponse pickUpSprinkleMoney = sprinkleMoneyService.pickUpSprinkleMoney(sprinkleMoney.getSprinkleMoney().getToken(), sprinkleMoney.getSprinkleMoney().getRoomEntity().getId().toString(), pickUpUserId);
             assertThat(pickUpSprinkleMoney.getCode(), equalTo("A0000"));
         }catch (ProjectException p){
-            System.out.println("7-2. 받기 테스트 결과");
+            System.out.println("6-2. 받기 테스트 결과");
             System.out.println(p.getDefaultMsg() +" - "+ p.toString());
             assertThat(p.getResultCode(), equalTo("E0018"));
         }
     }
 
+    /****
+     * 받기 - 1번방 유저가 1번방 유저의 뿌리기를 받으려고 할 때(정상 케이스)
+     * @throws Exception
+     */
+    @Test
+    void test_sprinkleAndPickUpSuccess() throws Exception{
+        long sprinkleUserId = 1;
+        EventVO eventVO = new EventVO();
+        eventVO.setEventAmount(1000);
+        eventVO.setEventUserCount(20);
+
+        SprinkleMoneyResponse sprinkleMoney = sprinkleMoneyService.sprinkleMoney(roomRepository.findTopByOrderByIdAsc().getId().toString(), sprinkleUserId, eventVO);
+        System.out.println("7. 받기 - 1번방 유저가 1번방 유저의 뿌리기를 받으려고 할 때스(정상 케이스)");
+        System.out.println("7-1. 뿌리기 데이터 결과");
+        System.out.println(sprinkleMoney.toString());
+
+        long pickUpUserId = 3;
+        try{
+            PickUpMoneyResponse pickUpSprinkleMoney = sprinkleMoneyService.pickUpSprinkleMoney(sprinkleMoney.getSprinkleMoney().getToken(), sprinkleMoney.getSprinkleMoney().getRoomEntity().getId().toString(), pickUpUserId);
+            System.out.println("7-2. 받기 테스트 결과");
+            System.out.println(pickUpSprinkleMoney.getMessage() +" - " +pickUpSprinkleMoney.toString());
+            System.out.println(pickUpSprinkleMoney.toString());
+            assertThat(pickUpSprinkleMoney.getCode(), equalTo("A0000"));
+        }catch (ProjectException p){
+            assertThat(p.getResultCode(), equalTo("E0007"));
+        }
+    }
 
 }
