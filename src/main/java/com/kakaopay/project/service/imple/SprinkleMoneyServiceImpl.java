@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
@@ -52,7 +53,7 @@ public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
             throw new ProjectServiceException("E0000", ErrorCode.Service.NO_DATA);
         }
         if (userId != sprinkleMoneyEntity.getUserId()){
-            throw new ProjectServiceException("E0001", ErrorCode.Service.ONLY_SHOW_OTHER);
+            throw new ProjectServiceException("E0001", ErrorCode.Service.ONLY_SHOW_YOURSELF);
         }
         if (Period.between(sprinkleMoneyEntity.getCreatedAt().toLocalDate(), LocalDateTime.now().toLocalDate()).getDays() > 7){
             throw new ProjectServiceException("E0002", ErrorCode.Service.EXPIRE_SHOW);
@@ -124,6 +125,13 @@ public class SprinkleMoneyServiceImpl implements SprinkleMoneyService {
         if (Duration.between(sprinkleMoneyEntity.getCreatedAt(), LocalDateTime.now()).getSeconds() > 600) {
             throw new ProjectServiceException("E0006", ErrorCode.Service.EXPIRE_RECEIVE);
         }
+
+        Stream<PickUpMoneyEntity> stream = sprinkleMoneyEntity.getPickUpMoneyEntities().stream();
+        stream.forEach((PickUpMoneyEntity p) -> {
+            if(p.getUserEntity() != null && p.getUserEntity().getId() == userId) {
+                throw new ProjectServiceException("E0009", ErrorCode.Service.MUST_PICKUP_ONCE);
+            }
+        });
 
         for(PickUpMoneyEntity pickUpMoneyEntity : sprinkleMoneyEntity.getPickUpMoneyEntities()){
             if (pickUpMoneyEntity.getUserEntity() == null){
