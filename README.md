@@ -38,3 +38,40 @@ X-ROOM-ID: 대화방의 식별값(문자형)
 - E0007 | ONLY_GET_OTHER........| 자신이 뿌리기 한 건은 자신이 받을 수 없습니다.
 - E0008 | NOT_EXSIST_ROOM_USER..| 카카오톡 방의 참여자가 아닙니다.
 ```
+
+## 테스트케이스
+<img src="https://user-images.githubusercontent.com/71118725/93021611-7627e800-f61e-11ea-8a61-22e8e0aa0e8d.png" width="90%"></img>
+
+<img src="https://user-images.githubusercontent.com/71118725/93021604-71fbca80-f61e-11ea-8a59-6b0785c023a4.png" width="90%"></img>
+
+##### 1. 방 생성 완료(2개)
+##### 2. 유저 생성 완료(첫번째 방 유저 5명, 두번째 방 유저 5명, 방이 없는 유저 1명)
+##### 3. 20건 뿌리기 테스트 결과
+```
+SprinkleMoneyResponse(sprinkleMoney=SprinkleMoneyEntity(id=1, token=vrc, createdAt=2020-09-13T23:58:06.279, updatedAt=2020-09-13T23:58:06.279, payMoneyAmount=1000, userId=1, roomEntity=RoomEntity(id=3576d87f-1263-4906-8eb7-93bbe522c929), pickUpMoneyEntities=[PickUpMoneyEntity(id=1, payMoneyAmount=34, createdAt=2020-09-13T23:58:06.285, updatedAt=2020-09-13T23:58:06.285, userEntity=null), PickUpMoneyEntity(id=2, payMoneyAmount=39, createdAt=2020-09-13T23:58:06.286, updatedAt=2020-09-13T23:58:06.286, userEntity=null), PickUpMoneyEntity(id=3, payMoneyAmount=43, createdAt=2020-09-13T23:58:06.287, updatedAt=2020-09-13T23:58:06.287, userEntity=null), PickUpMoneyEntity(id=4, payMoneyAmount=26, createdAt=2020-09-13T23:58:06.287, updatedAt=2020-09-13T23:58:06.287, userEntity=null), PickUpMoneyEntity(id=5, payMoneyAmount=30, createdAt=2020-09-13T23:58:06.288, updatedAt=2020-09-13T23:58:06.288, userEntity=null), PickUpMoneyEntity(id=6, payMoneyAmount=45, createdAt=2020-09-13T23:58:06.288, updatedAt=2020-09-13T23:58:06.288, userEntity=null), PickUpMoneyEntity(id=7, payMoneyAmount=21, createdAt=2020-09-13T23:58:06.289, updatedAt=2020-09-13T23:58:06.289, userEntity=null), PickUpMoneyEntity(id=8, payMoneyAmount=48, createdAt=2020-09-13T23:58:06.289, updatedAt=2020-09-13T23:58:06.289, userEntity=null), PickUpMoneyEntity(id=9, payMoneyAmount=18, createdAt=2020-09-13T23:58:06.290, updatedAt=2020-09-13T23:58:06.290, userEntity=null), PickUpMoneyEntity(id=10, payMoneyAmount=2, createdAt=2020-09-13T23:58:06.290, updatedAt=2020-09-13T23:58:06.290, userEntity=null), PickUpMoneyEntity(id=11, payMoneyAmount=12, createdAt=2020-09-13T23:58:06.291, updatedAt=2020-09-13T23:58:06.291, userEntity=null), PickUpMoneyEntity(id=12, payMoneyAmount=2, createdAt=2020-09-13T23:58:06.291, updatedAt=2020-09-13T23:58:06.291, userEntity=null), PickUpMoneyEntity(id=13, payMoneyAmount=16, createdAt=2020-09-13T23:58:06.292, updatedAt=2020-09-13T23:58:06.292, userEntity=null), PickUpMoneyEntity(id=14, payMoneyAmount=45, createdAt=2020-09-13T23:58:06.292, updatedAt=2020-09-13T23:58:06.292, userEntity=null), PickUpMoneyEntity(id=15, payMoneyAmount=11, createdAt=2020-09-13T23:58:06.293, updatedAt=2020-09-13T23:58:06.293, userEntity=null), PickUpMoneyEntity(id=16, payMoneyAmount=18, createdAt=2020-09-13T23:58:06.293, updatedAt=2020-09-13T23:58:06.293, userEntity=null), PickUpMoneyEntity(id=17, payMoneyAmount=9, createdAt=2020-09-13T23:58:06.293, updatedAt=2020-09-13T23:58:06.293, userEntity=null), PickUpMoneyEntity(id=18, payMoneyAmount=7, createdAt=2020-09-13T23:58:06.294, updatedAt=2020-09-13T23:58:06.294, userEntity=null), PickUpMoneyEntity(id=19, payMoneyAmount=46, createdAt=2020-09-13T23:58:06.294, updatedAt=2020-09-13T23:58:06.294, userEntity=null), PickUpMoneyEntity(id=20, payMoneyAmount=528, createdAt=2020-09-13T23:58:06.295, updatedAt=2020-09-13T23:58:06.295, userEntity=null)]))
+```
+##### 4. 받기 - 뿌리기 한 사람이 받기(Exception 케이스)
+###### 4-1. 뿌리기(3건)
+###### 4-2. 받기 테스트 결과
+```
+자신이 뿌리기 한 건은 자신이 받을 수 없습니다. - com.kakaopay.project.exception.ProjectServiceException
+```
+##### 5. 받기 - 2번방 유저가 1번방 뿌리기를 받으려고 할 때(Exception 케이스)
+###### 5-1. 뿌리기(3건)
+###### 5-2. 받기 테스트 결과
+```
+카카오톡 방의 참여자가 아닙니다. - com.kakaopay.project.exception.ProjectServiceException
+```
+##### 6. 받기 - 참가한 방이 없는 유저가 1번방 뿌리기를 받으려고 할때(Exception 케이스)
+###### 6-1. 뿌리기(3건)
+###### 6-2. 받기 테스트 결과
+```
+카카오톡 방의 참여자가 아닙니다. - com.kakaopay.project.exception.ProjectServiceException
+```
+##### 7. 받기 - 1번방 유저가 1번방 유저의 뿌리기를 받으려고 할 때스(정상 케이스)
+###### 7-1. 뿌리기(3건)
+###### 7-2. 받기 테스트 결과
+```
+성공 - PickUpMoneyResponse(pickUpMoney=PickUpMoneyEntity(id=30, payMoneyAmount=331, createdAt=2020-09-13T23:58:06.413, updatedAt=2020-09-13T23:58:06.424, userEntity=UserEntity(id=3, payMoney=1331, roomEntity=RoomEntity(id=3576d87f-1263-4906-8eb7-93bbe522c929))))
+```
+
